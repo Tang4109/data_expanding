@@ -3,10 +3,12 @@ from sklearn.neighbors import NearestNeighbors
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
-
+import pylab as p
 # 定义一个数组
-X = np.array([[-1, -1, 0], [-2, -1, -3], [-3, -2, -2],[0,0,1],[0,1,0],[1,0.6,0.8],
-[1, 1, 2], [2, 1, 4], [3, 2, 6],[3,5,5],[4,5,3],[4,6,5], [5, 7, 2], [-1, -1.5, -2]])
+# X = np.array([[-1, -1, 0], [-2, -1, -3], [-3, -2, -2],[0,0,1],[0,1,0],[1,0.6,0.8],
+# [1, 1, 2], [2, 1, 4], [3, 2, 6],[3,5,5],[4,5,3],[4,6,5], [5, 7, 2], [-1, -1.5, -2]])
+
+X = np.loadtxt("DTLZ2.3D.pf")
 
 X0=X.tolist()#数组转列表
 """
@@ -21,12 +23,15 @@ print("初始元素个数：", num1)
 
 #用k近邻扩充数据点
 while (num2 / num1 < 11):
-    nbrs = NearestNeighbors(n_neighbors=2, algorithm="auto").fit(X)
+    nbrs = NearestNeighbors(n_neighbors=4, algorithm="auto").fit(X)
     # 返回距离每个点k个最近的点和距离指数，indices可以理解为表示点的下标，distances为距离
     distances, indices = nbrs.kneighbors(X)
     X = list(X)  # 转为list才能使用append函数
     for x in indices:
         X.append( (X[x[0]]+X[x[1]])/2)
+        X.append( (X[x[1]]+X[x[2]])/2)
+        X.append((X[x[2]] + X[x[3]]) / 2)
+        X.append((X[x[0]] + X[x[3]]) / 2)
     # 去除重复的元素
     # 删除重复行
     X = np.unique(X, axis=0)
@@ -37,7 +42,7 @@ print("扩充后元素个数：",num2)
 X_add = [h for h in X if h not in X0]#去除原数据，剩下扩充数据
 num3=len(X_add)
 print("添加的元素个数：",num3)
-
+print(X_add)
 #绘图
 #新增数据
 x = []
@@ -63,10 +68,11 @@ for m1 in range(num1):
 
 
 ax = plt.subplot(111,projection='3d')  # 创建一个三维的绘图工程
-ax.scatter(x, y, z, c='r',s=5)  # 绘制数据点,颜色是红色
-ax.scatter(x1, y1, z1, c='b',s=5)
+ax.scatter(x, y, z, c='g',s=5)  # 绘制数据点,颜色是红色
+ax.scatter(x1, y1, z1, c='r',s=5)
 
 ax.set_zlabel('Z')  # 坐标轴
 ax.set_ylabel('Y')
 ax.set_xlabel('X')
+
 plt.show()
